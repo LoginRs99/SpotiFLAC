@@ -6,6 +6,7 @@ import { defineConfig } from "vite";
 const wailsJsonPath = path.resolve(__dirname, "../wails.json");
 const wailsJson = JSON.parse(fs.readFileSync(wailsJsonPath, "utf-8"));
 const appVersion = wailsJson.info.productVersion;
+const dockerWeb = process.env.SPOTIFLAC_DOCKER_WEB === "true";
 export default defineConfig({
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -15,5 +16,6 @@ export default defineConfig({
     },
     define: {
         __APP_VERSION__: JSON.stringify(appVersion),
+        __DOCKER_WEB__: JSON.stringify(dockerWeb),
     },
 });

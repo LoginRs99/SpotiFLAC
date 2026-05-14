@@ -498,6 +498,10 @@ function App() {
         return null;
     };
     const handlePageChange = (page: PageType) => {
+        if (__DOCKER_WEB__ && ["debug", "about", "audio-analysis", "audio-converter", "audio-resampler", "file-manager"].includes(page)) {
+            setCurrentPage("main");
+            return;
+        }
         if (currentPage === "settings" && hasUnsavedSettings && page !== "settings") {
             setPendingPageChange(page);
             setShowUnsavedChangesDialog(true);

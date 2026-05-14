@@ -2,6 +2,7 @@
 
 FROM node:24-bookworm AS frontend
 WORKDIR /src/frontend
+ENV SPOTIFLAC_DOCKER_WEB=true
 RUN corepack enable && corepack prepare pnpm@9 --activate
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 COPY frontend/scripts ./scripts

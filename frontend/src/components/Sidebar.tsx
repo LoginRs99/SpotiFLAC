@@ -27,6 +27,7 @@ interface AnimatedIconHandle {
     stopAnimation: () => void;
 }
 export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
+    const isDockerWeb = __DOCKER_WEB__;
     const [isIssuesDialogOpen, setIsIssuesDialogOpen] = useState(false);
     const [hasIssueAgreement, setHasIssueAgreement] = useState(false);
     const analyzerIconRef = useRef<ActivityIconHandle>(null);
@@ -84,7 +85,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     </TooltipContent>
                 </Tooltip>
 
-                <Tooltip delayDuration={0}>
+                {!isDockerWeb && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "debug" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "debug" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("debug")}>
                             <TerminalIcon size={20} loop={true}/>
@@ -93,9 +94,9 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     <TooltipContent side="right">
                         <p>Debug Logs</p>
                     </TooltipContent>
-                </Tooltip>
+                </Tooltip>)}
 
-                <DropdownMenu>
+                {!isDockerWeb && (<DropdownMenu>
                     <Tooltip delayDuration={0}>
                         <DropdownMenuTrigger asChild>
                             <TooltipTrigger asChild>
@@ -126,11 +127,11 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                             <span>File Manager</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu>)}
             </div>
 
             <div className="mt-auto flex flex-col gap-2">
-                <Dialog open={isIssuesDialogOpen} onOpenChange={handleIssuesDialogChange}>
+                {!isDockerWeb && (<Dialog open={isIssuesDialogOpen} onOpenChange={handleIssuesDialogChange}>
                     <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-primary/10 hover:text-primary" onClick={() => setIsIssuesDialogOpen(true)}>
@@ -172,9 +173,9 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                             </Button>
                         </DialogFooter>
                     </DialogContent>
-                </Dialog>
+                </Dialog>)}
 
-                <Tooltip delayDuration={0}>
+                {!isDockerWeb && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "projects" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "projects" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("projects")}>
                             <BlocksIcon size={20} loop={true}/>
@@ -183,9 +184,9 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     <TooltipContent side="right">
                         <p>Other Projects</p>
                     </TooltipContent>
-                </Tooltip>
+                </Tooltip>)}
 
-                <Tooltip delayDuration={0}>
+                {!isDockerWeb && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "support" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "support" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("support")}>
                             <CoffeeIcon size={20} loop={true}/>
@@ -194,7 +195,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     <TooltipContent side="right">
                         <p>Support Me</p>
                     </TooltipContent>
-                </Tooltip>
+                </Tooltip>)}
             </div>
         </div>);
 }
