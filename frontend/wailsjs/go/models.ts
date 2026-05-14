@@ -177,8 +177,8 @@ export namespace backend {
     artist?: string;
     album?: string;
     album_artist?: string;
-    track_number?: string;
-    disc_number?: string;
+    track_number?: number;
+    disc_number?: number;
     year?: string;
   }
 }
