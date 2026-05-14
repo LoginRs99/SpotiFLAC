@@ -78,11 +78,11 @@ export async function DownloadTrack(req: unknown): Promise<Record<string, unknow
   return { success: true, message: "Download completed successfully", file: filename };
 }
 
-export function SearchSpotify(req: unknown): Promise<unknown> {
+export function SearchSpotify(req: unknown): Promise<any> {
   return postJSON("/api/search", req);
 }
 
-export function SearchSpotifyByType(req: unknown): Promise<unknown[]> {
+export function SearchSpotifyByType(req: unknown): Promise<any[]> {
   return postJSON("/api/search-by-type", req);
 }
 
@@ -111,11 +111,11 @@ export function SaveFonts(fonts: Record<string, unknown>[]): Promise<void> {
   return postJSON<void>("/api/fonts", fonts);
 }
 
-export function GetDownloadProgress(): Promise<unknown> {
+export function GetDownloadProgress(): Promise<any> {
   return apiJSON("/api/download/progress");
 }
 
-export function GetDownloadQueue(): Promise<unknown> {
+export function GetDownloadQueue(): Promise<any> {
   return apiJSON("/api/download/queue");
 }
 
@@ -151,7 +151,7 @@ export function CreateM3U8File(playlistName: string, outputDir: string, filePath
   return postJSON<void>("/api/download/m3u8", { playlistName, outputDir, filePaths });
 }
 
-export function GetDownloadHistory(): Promise<unknown[]> {
+export function GetDownloadHistory(): Promise<any[]> {
   return apiJSON("/api/history/downloads");
 }
 
@@ -163,7 +163,7 @@ export function DeleteDownloadHistoryItem(id: string): Promise<void> {
   return deleteJSON<void>(`/api/history/downloads/item?id=${encodeURIComponent(id)}`);
 }
 
-export function GetFetchHistory(): Promise<unknown[]> {
+export function GetFetchHistory(): Promise<any[]> {
   return apiJSON("/api/history/fetches");
 }
 
@@ -206,7 +206,7 @@ export function CheckFFmpegInstalled(): Promise<boolean> {
 
 export const IsFFmpegInstalled = CheckFFmpegInstalled;
 
-export function DownloadFFmpeg(): Promise<unknown> {
+export function DownloadFFmpeg(): Promise<any> {
   return postJSON("/api/status/ffmpeg/download");
 }
 
@@ -214,23 +214,23 @@ export function CheckTrackAvailability(spotifyTrackID: string): Promise<string> 
   return apiJSON<unknown>(`/api/availability?spotifyTrackID=${encodeURIComponent(spotifyTrackID)}`).then(JSON.stringify);
 }
 
-export function DownloadLyrics(req: unknown): Promise<unknown> {
+export function DownloadLyrics(req: unknown): Promise<any> {
   return postJSON("/api/lyrics", req);
 }
 
-export function DownloadCover(req: unknown): Promise<unknown> {
+export function DownloadCover(req: unknown): Promise<any> {
   return postJSON("/api/cover", req);
 }
 
-export function DownloadHeader(req: unknown): Promise<unknown> {
+export function DownloadHeader(req: unknown): Promise<any> {
   return postJSON("/api/header", req);
 }
 
-export function DownloadGalleryImage(req: unknown): Promise<unknown> {
+export function DownloadGalleryImage(req: unknown): Promise<any> {
   return postJSON("/api/gallery-image", req);
 }
 
-export function DownloadAvatar(req: unknown): Promise<unknown> {
+export function DownloadAvatar(req: unknown): Promise<any> {
   return postJSON("/api/avatar", req);
 }
 
@@ -267,31 +267,31 @@ export function SelectAudioFiles(): Promise<string[]> {
   return unsupported("SelectAudioFiles", []);
 }
 
-export function ListAudioFilesInDir(_dirPath: string): Promise<unknown[]> {
+export function ListAudioFilesInDir(_dirPath: string): Promise<any[]> {
   return unsupported("ListAudioFilesInDir", []);
 }
 
-export function ListDirectoryFiles(_dirPath: string): Promise<unknown[]> {
+export function ListDirectoryFiles(_dirPath: string): Promise<any[]> {
   return unsupported("ListDirectoryFiles", []);
 }
 
-export function ReadFileMetadata(_filePath: string): Promise<unknown> {
+export function ReadFileMetadata(_filePath: string): Promise<any> {
   return unsupported("ReadFileMetadata", {});
 }
 
-export function PreviewRenameFiles(_files: string[], _format: string): Promise<unknown[]> {
+export function PreviewRenameFiles(_files: string[], _format: string): Promise<any[]> {
   return unsupported("PreviewRenameFiles", []);
 }
 
-export function RenameFilesByMetadata(_files: string[], _format: string): Promise<unknown[]> {
+export function RenameFilesByMetadata(_files: string[], _format: string): Promise<any[]> {
   return unsupported("RenameFilesByMetadata", []);
 }
 
-export function ConvertAudio(_req: unknown): Promise<unknown[]> {
+export function ConvertAudio(_req: unknown): Promise<any[]> {
   return unsupported("ConvertAudio", []);
 }
 
-export function ResampleAudio(_req: unknown): Promise<unknown[]> {
+export function ResampleAudio(_req: unknown): Promise<any[]> {
   return unsupported("ResampleAudio", []);
 }
 
@@ -303,7 +303,7 @@ export function SaveSpectrumImage(_audioFilePath: string, _base64Data: string): 
   return unsupported("SaveSpectrumImage", "");
 }
 
-export function GetFlacInfoBatch(_paths: string[]): Promise<unknown[]> {
+export function GetFlacInfoBatch(_paths: string[]): Promise<any[]> {
   return unsupported("GetFlacInfoBatch", []);
 }
 
@@ -315,10 +315,96 @@ export function ReadFileAsBase64(_filePath: string): Promise<string> {
   return unsupported("ReadFileAsBase64", "");
 }
 
-export function DecodeAudioForAnalysis(_filePath: string): Promise<unknown> {
+export function DecodeAudioForAnalysis(_filePath: string): Promise<any> {
   return unsupported("DecodeAudioForAnalysis", {});
 }
 
 export function ExportFailedDownloads(): Promise<string> {
   return unsupported("ExportFailedDownloads", "Export is not available in the Docker web build.");
 }
+
+export function RenameFileTo(_oldPath: string, _newName: string): Promise<void> {
+  return unsupported("RenameFileTo", undefined);
+}
+
+export function ReadImageAsBase64(_filePath: string): Promise<string> {
+  return unsupported("ReadImageAsBase64", "");
+}
+
+export function SelectImageVideo(): Promise<string[]> {
+  return unsupported("SelectImageVideo", []);
+}
+
+const appAPI = {
+  GetSpotifyMetadata,
+  GetCurrentIPInfo,
+  DownloadTrack,
+  SearchSpotify,
+  SearchSpotifyByType,
+  GetStreamingURLs,
+  GetDefaults,
+  LoadSettings,
+  SaveSettings,
+  LoadFonts,
+  SaveFonts,
+  GetDownloadProgress,
+  GetDownloadQueue,
+  AddToDownloadQueue,
+  MarkDownloadItemFailed,
+  CancelAllQueuedItems,
+  ClearCompletedDownloads,
+  ClearAllDownloads,
+  SkipDownloadItem,
+  CheckFilesExistence,
+  CreateM3U8File,
+  GetDownloadHistory,
+  ClearDownloadHistory,
+  DeleteDownloadHistoryItem,
+  GetFetchHistory,
+  AddFetchHistory,
+  ClearFetchHistory,
+  DeleteFetchHistoryItem,
+  ClearFetchHistoryByType,
+  GetRecentFetches,
+  SaveRecentFetches,
+  CheckAPIStatus,
+  CheckCustomTidalAPI,
+  CheckFFmpegInstalled,
+  IsFFmpegInstalled,
+  DownloadFFmpeg,
+  CheckTrackAvailability,
+  DownloadLyrics,
+  DownloadCover,
+  DownloadHeader,
+  DownloadGalleryImage,
+  DownloadAvatar,
+  GetPreviewURL,
+  GetTrackISRC,
+  OpenFolder,
+  OpenConfigFolder,
+  SelectFolder,
+  SelectFile,
+  SelectAudioFiles,
+  ListAudioFilesInDir,
+  ListDirectoryFiles,
+  ReadFileMetadata,
+  PreviewRenameFiles,
+  RenameFilesByMetadata,
+  ConvertAudio,
+  ResampleAudio,
+  GetFileSizes,
+  SaveSpectrumImage,
+  GetFlacInfoBatch,
+  ReadTextFile,
+  ReadFileAsBase64,
+  DecodeAudioForAnalysis,
+  ExportFailedDownloads,
+  RenameFileTo,
+  ReadImageAsBase64,
+  SelectImageVideo,
+};
+
+const globalWindow = window as any;
+globalWindow.go = globalWindow.go ?? {};
+globalWindow.go.main = globalWindow.go.main ?? {};
+globalWindow.go.main.App = { ...(globalWindow.go.main.App ?? {}), ...appAPI };

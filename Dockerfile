@@ -4,7 +4,9 @@ FROM node:24-bookworm AS frontend
 WORKDIR /src/frontend
 RUN corepack enable && corepack prepare pnpm@9 --activate
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --ignore-scripts
+COPY frontend/scripts ./scripts
+COPY frontend/public/icon.svg ./public/icon.svg
+RUN pnpm install --frozen-lockfile
 COPY frontend ./
 COPY wails.json ../wails.json
 RUN pnpm run generate-icon && pnpm run build

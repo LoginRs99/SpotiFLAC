@@ -36,6 +36,36 @@ export namespace main {
       Object.assign(this, source);
     }
   }
+
+  export class LyricsDownloadRequest {
+    constructor(source: Record<string, unknown> = {}) {
+      Object.assign(this, source);
+    }
+  }
+
+  export class CoverDownloadRequest {
+    constructor(source: Record<string, unknown> = {}) {
+      Object.assign(this, source);
+    }
+  }
+
+  export class HeaderDownloadRequest {
+    constructor(source: Record<string, unknown> = {}) {
+      Object.assign(this, source);
+    }
+  }
+
+  export class GalleryImageDownloadRequest {
+    constructor(source: Record<string, unknown> = {}) {
+      Object.assign(this, source);
+    }
+  }
+
+  export class AvatarDownloadRequest {
+    constructor(source: Record<string, unknown> = {}) {
+      Object.assign(this, source);
+    }
+  }
 }
 
 export namespace backend {
