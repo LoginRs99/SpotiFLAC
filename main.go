@@ -1,3 +1,5 @@
+//go:build !dockerweb
+
 package main
 
 import (

@@ -1,0 +1,13 @@
+services:
+  spotiflac-web:
+    build: .
+    image: spotiflac-web:local
+    ports:
+      - "${SPOTIFLAC_PORT:-8080}:8080"
+    environment:
+      SPOTIFLAC_HOST: "0.0.0.0"
+      SPOTIFLAC_PORT: "8080"
+      SPOTIFLAC_TMP_DIR: "/tmp/spotiflac-web"
+    tmpfs:
+      - /tmp/spotiflac-web:size=4g
+    restart: unless-stopped

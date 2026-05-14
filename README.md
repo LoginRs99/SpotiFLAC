@@ -14,6 +14,16 @@ Get Spotify tracks in true FLAC from Tidal, Qobuz & Amazon Music — no account 
 
 ![Image](https://github.com/user-attachments/assets/c2624ca5-8569-49f0-950e-4410b523cea1)
 
+## Docker Web Build
+
+This fork includes an experimental Docker-hosted web build on the `docker-web` branch. It runs SpotiFLAC in a browser and streams completed downloads back to the user's PC instead of keeping a permanent music library in the container.
+
+```sh
+docker compose up --build
+```
+
+Open `http://localhost:8080`. See [docs/docker-web.md](docs/docker-web.md) for details and upstream sync notes.
+
 ## Other projects
 
 ### [SpotiFLAC Next](https://github.com/spotbye/SpotiFLAC-Next)

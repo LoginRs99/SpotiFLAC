@@ -1,0 +1,13 @@
+.git
+build
+frontend/dist
+frontend/node_modules
+node_modules
+.pnpm-store
+tmp
+temp
+*.log
+*.exe
+*.dll
+*.dylib
+*.so
