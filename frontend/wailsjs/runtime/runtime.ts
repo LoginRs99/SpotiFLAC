@@ -1,4 +1,4 @@
-type EventHandler = (data?: unknown) => void;
+type EventHandler = (...args: any[]) => void;
 
 const handlers = new Map<string, Set<EventHandler>>();
 

@@ -32,37 +32,49 @@ export namespace main {
   }
 
   export class DownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
 
   export class LyricsDownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
 
   export class CoverDownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
 
   export class HeaderDownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
 
   export class GalleryImageDownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
 
   export class AvatarDownloadRequest {
-    constructor(source: Record<string, unknown> = {}) {
+    [key: string]: any;
+
+    constructor(source: any = {}) {
       Object.assign(this, source);
     }
   }
@@ -70,12 +82,17 @@ export namespace main {
 
 export namespace backend {
   export class DownloadQueueInfo {
+    [key: string]: any;
+
     queue: DownloadQueueItem[] = [];
-    active = 0;
-    pending = 0;
-    completed = 0;
-    failed = 0;
-    skipped = 0;
+    is_downloading = false;
+    queued_count = 0;
+    completed_count = 0;
+    failed_count = 0;
+    skipped_count = 0;
+    total_downloaded = 0;
+    current_speed = 0;
+    session_start_time = 0;
     total = 0;
 
     constructor(source: Partial<DownloadQueueInfo> = {}) {
@@ -84,6 +101,8 @@ export namespace backend {
   }
 
   export interface DownloadQueueItem {
+    [key: string]: any;
+
     id: string;
     track_name: string;
     artist_name: string;
@@ -96,6 +115,12 @@ export namespace backend {
   }
 
   export class SearchResponse {
+    [key: string]: any;
+
+    tracks: SearchResult[] = [];
+    albums: SearchResult[] = [];
+    artists: SearchResult[] = [];
+    playlists: SearchResult[] = [];
     results: SearchResult[] = [];
     total = 0;
 
@@ -105,6 +130,8 @@ export namespace backend {
   }
 
   export interface SearchResult {
+    [key: string]: any;
+
     id: string;
     name: string;
     artists?: string;
@@ -114,6 +141,8 @@ export namespace backend {
   }
 
   export interface FileInfo {
+    [key: string]: any;
+
     name: string;
     path: string;
     is_dir: boolean;
@@ -122,6 +151,10 @@ export namespace backend {
   }
 
   export interface RenamePreview {
+    [key: string]: any;
+
+    old_name?: string;
+    new_name?: string;
     old_path: string;
     new_path: string;
     success: boolean;
@@ -129,6 +162,8 @@ export namespace backend {
   }
 
   export interface RenameResult {
+    [key: string]: any;
+
     old_path: string;
     new_path: string;
     success: boolean;
@@ -136,11 +171,14 @@ export namespace backend {
   }
 
   export interface AudioMetadata {
+    [key: string]: any;
+
     title?: string;
     artist?: string;
     album?: string;
     album_artist?: string;
     track_number?: string;
+    disc_number?: string;
     year?: string;
   }
 }

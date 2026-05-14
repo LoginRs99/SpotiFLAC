@@ -51,7 +51,7 @@ export function GetCurrentIPInfo(): Promise<string> {
   return apiJSON<unknown>("/api/current-ip").then(JSON.stringify);
 }
 
-export async function DownloadTrack(req: unknown): Promise<Record<string, unknown>> {
+export async function DownloadTrack(req: unknown): Promise<any> {
   const response = await fetch("/api/download", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
