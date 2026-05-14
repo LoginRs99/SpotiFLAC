@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Search, X, ArrowUp } from "lucide-react";
@@ -18,15 +18,8 @@ import { PlaylistInfo } from "@/components/PlaylistInfo";
 import { ArtistInfo } from "@/components/ArtistInfo";
 import { DownloadQueue } from "@/components/DownloadQueue";
 import { DownloadProgressToast } from "@/components/DownloadProgressToast";
-import { AudioAnalysisPage } from "@/components/AudioAnalysisPage";
-import { AudioConverterPage } from "@/components/AudioConverterPage";
-import { AudioResamplerPage } from "@/components/AudioResamplerPage";
-import { FileManagerPage } from "@/components/FileManagerPage";
 import { SettingsPage } from "@/components/SettingsPage";
-import { DebugLoggerPage } from "@/components/DebugLoggerPage";
-import { OtherProjects } from "@/components/OtherProjects";
 import { HistoryPage } from "@/components/HistoryPage";
-import { SupportPage } from "@/components/SupportPage";
 import type { HistoryItem } from "@/components/FetchHistory";
 import { useDownload } from "@/hooks/useDownload";
 import { useMetadata } from "@/hooks/useMetadata";
@@ -38,6 +31,14 @@ import { useDownloadQueueDialog } from "@/hooks/useDownloadQueueDialog";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import { buildPlaylistFolderName } from "@/lib/playlist";
 import { createId } from "@/lib/id";
+const DockerWebUnavailablePage = () => null;
+const DebugLoggerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/DebugLoggerPage").then((module) => ({ default: module.DebugLoggerPage })));
+const OtherProjects = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/OtherProjects").then((module) => ({ default: module.OtherProjects })));
+const SupportPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/SupportPage").then((module) => ({ default: module.SupportPage })));
+const AudioAnalysisPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioAnalysisPage").then((module) => ({ default: module.AudioAnalysisPage })));
+const AudioConverterPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioConverterPage").then((module) => ({ default: module.AudioConverterPage })));
+const AudioResamplerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioResamplerPage").then((module) => ({ default: module.AudioResamplerPage })));
+const FileManagerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/FileManagerPage").then((module) => ({ default: module.FileManagerPage })));
 const HISTORY_KEY = "spotiflac_fetch_history";
 const MAX_HISTORY = 5;
 function extractSpotifyEntityFromURL(url: string): {
@@ -499,7 +500,7 @@ function App() {
         return null;
     };
     const handlePageChange = (page: PageType) => {
-        if (__DOCKER_WEB__ && ["debug", "about", "audio-analysis", "audio-converter", "audio-resampler", "file-manager"].includes(page)) {
+        if (__DOCKER_WEB__ && ["debug", "projects", "support", "audio-analysis", "audio-converter", "audio-resampler", "file-manager"].includes(page)) {
             setCurrentPage("main");
             return;
         }
@@ -614,7 +615,9 @@ function App() {
             <div ref={contentScrollRef} className="fixed top-10 right-0 bottom-0 left-14 overflow-y-auto overflow-x-hidden">
                 <div className="p-4 md:p-8">
                     <div className="max-w-4xl mx-auto space-y-6">
-                        {renderPage()}
+                        <Suspense fallback={<div className="text-sm text-muted-foreground">Loading...</div>}>
+                            {renderPage()}
+                        </Suspense>
                     </div>
                 </div>
             </div>

@@ -222,11 +222,14 @@ func (s *webServer) handleMetadata(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
+	log.Printf("[metadata] fetch url=%q batch=%t timeout=%.0fs", req.URL, req.Batch, req.Timeout)
 	value, err := s.app.GetSpotifyMetadata(req)
 	if err != nil {
+		log.Printf("[metadata] failed url=%q error=%v", req.URL, err)
 		writeErr(w, http.StatusBadGateway, err)
 		return
 	}
+	log.Printf("[metadata] completed url=%q bytes=%d", req.URL, len(value))
 	writeRawJSON(w, value)
 }
 
@@ -239,8 +242,10 @@ func (s *webServer) handleSearch(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
+	log.Printf("[search] query=%q limit=%d", req.Query, req.Limit)
 	resp, err := s.app.SearchSpotify(req)
 	if err != nil {
+		log.Printf("[search] failed query=%q error=%v", req.Query, err)
 		writeErr(w, http.StatusBadGateway, err)
 		return
 	}
@@ -256,8 +261,10 @@ func (s *webServer) handleSearchByType(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
+	log.Printf("[search-by-type] type=%q query=%q limit=%d offset=%d", req.SearchType, req.Query, req.Limit, req.Offset)
 	resp, err := s.app.SearchSpotifyByType(req)
 	if err != nil {
+		log.Printf("[search-by-type] failed type=%q query=%q error=%v", req.SearchType, req.Query, err)
 		writeErr(w, http.StatusBadGateway, err)
 		return
 	}
@@ -285,6 +292,7 @@ func (s *webServer) handleDownload(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
+	log.Printf("[download] start service=%q spotify_id=%q track=%q artist=%q", req.Service, req.SpotifyID, req.TrackName, req.ArtistName)
 
 	jobDir, err := os.MkdirTemp(s.tmpRoot, "download-*")
 	if err != nil {
@@ -299,12 +307,14 @@ func (s *webServer) handleDownload(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			err = errors.New(resp.Error)
 		}
+		log.Printf("[download] failed service=%q spotify_id=%q error=%v", req.Service, req.SpotifyID, err)
 		writeErr(w, http.StatusBadGateway, err)
 		return
 	}
 
 	filePath := resp.File
 	if strings.TrimSpace(filePath) == "" {
+		log.Printf("[download] failed service=%q spotify_id=%q error=empty file path", req.Service, req.SpotifyID)
 		writeErr(w, http.StatusInternalServerError, errors.New("download completed without a file path"))
 		return
 	}
@@ -331,7 +341,9 @@ func (s *webServer) handleDownload(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if _, err := io.Copy(w, file); err != nil {
 		log.Printf("failed to stream download: %v", err)
+		return
 	}
+	log.Printf("[download] streamed filename=%q size=%d spotify_id=%q", filename, info.Size(), req.SpotifyID)
 }
 
 func contentTypeForFile(name string) string {

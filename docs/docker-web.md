@@ -52,6 +52,8 @@ git rebase main
 git push origin docker-web --force-with-lease
 ```
 
+See [upstream-sync.md](upstream-sync.md) for the full sync workflow and conflict guidance.
+
 ## Known V1 Limits
 
 The Docker web build focuses on core search, metadata, settings, queue, and download workflows. Desktop-only features such as native folder pickers, opening folders in the OS file manager, drag-and-drop local file tools, audio conversion, resampling, and file renaming are stubbed or return empty results in the browser build.
