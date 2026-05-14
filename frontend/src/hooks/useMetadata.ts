@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import { AddFetchHistory, SearchSpotifyByType } from "../../wailsjs/go/main/App";
 import { EventsOff, EventsOn } from "../../wailsjs/runtime/runtime";
 import type { SpotifyMetadataResponse } from "@/types/api";
+import { createId } from "@/lib/id";
 export function useMetadata() {
     const [loading, setLoading] = useState(false);
     const [metadata, setMetadata] = useState<SpotifyMetadataResponse | null>(null);
@@ -152,7 +153,7 @@ export function useMetadata() {
             }
             const jsonStr = JSON.stringify(data);
             await AddFetchHistory({
-                id: crypto.randomUUID(),
+                id: createId(),
                 url: url,
                 type: type,
                 name: name,

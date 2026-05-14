@@ -37,6 +37,7 @@ import { ensureApiStatusCheckStarted } from "@/lib/api-status";
 import { useDownloadQueueDialog } from "@/hooks/useDownloadQueueDialog";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import { buildPlaylistFolderName } from "@/lib/playlist";
+import { createId } from "@/lib/id";
 const HISTORY_KEY = "spotiflac_fetch_history";
 const MAX_HISTORY = 5;
 function extractSpotifyEntityFromURL(url: string): {
@@ -321,7 +322,7 @@ function App() {
             const newItem: HistoryItem = {
                 ...item,
                 url: normalizedUrl,
-                id: crypto.randomUUID(),
+                id: createId(),
                 timestamp: Date.now(),
             };
             const updated = normalizeHistoryItems([newItem, ...filtered]);
