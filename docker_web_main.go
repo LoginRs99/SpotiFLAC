@@ -27,9 +27,18 @@ type jsonError struct {
 type webServer struct {
 	app     *App
 	tmpRoot string
+	started time.Time
+	version string
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--healthcheck" {
+		if err := runHealthcheck(); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	app := NewApp()
 	app.startup(context.Background())
 	defer app.shutdown(context.Background())
@@ -41,8 +50,9 @@ func main() {
 	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
 		log.Fatalf("failed to create temp dir: %v", err)
 	}
+	cleanupStaleDownloadDirs(tmpRoot)
 
-	server := &webServer{app: app, tmpRoot: tmpRoot}
+	server := &webServer{app: app, tmpRoot: tmpRoot, started: time.Now(), version: backend.AppVersion}
 	mux := http.NewServeMux()
 	server.registerAPI(mux)
 	mux.Handle("/", http.FileServer(http.Dir("frontend/dist")))
@@ -65,6 +75,7 @@ func main() {
 
 func (s *webServer) registerAPI(mux *http.ServeMux) {
 	mux.HandleFunc("/api/health", s.handleHealth)
+	mux.HandleFunc("/api/docker/status", s.handleDockerStatus)
 	mux.HandleFunc("/api/current-ip", s.handleCurrentIP)
 	mux.HandleFunc("/api/defaults", s.handleDefaults)
 	mux.HandleFunc("/api/settings", s.handleSettings)
@@ -129,6 +140,48 @@ func writeErr(w http.ResponseWriter, status int, err error) {
 	writeJSON(w, status, jsonError{Error: err.Error()})
 }
 
+func cleanupStaleDownloadDirs(tmpRoot string) {
+	entries, err := os.ReadDir(tmpRoot)
+	if err != nil {
+		log.Printf("[startup] temp cleanup skipped: %v", err)
+		return
+	}
+
+	removed := 0
+	for _, entry := range entries {
+		if !entry.IsDir() || !strings.HasPrefix(entry.Name(), "download-") {
+			continue
+		}
+		if err := os.RemoveAll(filepath.Join(tmpRoot, entry.Name())); err != nil {
+			log.Printf("[startup] failed to remove stale temp dir %q: %v", entry.Name(), err)
+			continue
+		}
+		removed++
+	}
+	if removed > 0 {
+		log.Printf("[startup] removed %d stale download temp dir(s)", removed)
+	}
+}
+
+func runHealthcheck() error {
+	port := strings.TrimSpace(os.Getenv("SPOTIFLAC_PORT"))
+	if port == "" {
+		port = "8080"
+	}
+
+	client := http.Client{Timeout: 3 * time.Second}
+	resp, err := client.Get("http://127.0.0.1:" + port + "/api/health")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("health endpoint returned HTTP %d", resp.StatusCode)
+	}
+	return nil
+}
+
 func decodeJSON(r *http.Request, dst interface{}) error {
 	defer r.Body.Close()
 	return json.NewDecoder(r.Body).Decode(dst)
@@ -143,7 +196,38 @@ func requireMethod(w http.ResponseWriter, r *http.Request, method string) bool {
 }
 
 func (s *webServer) handleHealth(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]string{"status": "ok", "time": time.Now().Format(time.RFC3339)})
+	ffmpegInstalled, _ := s.app.CheckFFmpegInstalled()
+	queue := s.app.GetDownloadQueue()
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"status":              "ok",
+		"time":                time.Now().Format(time.RFC3339),
+		"version":             s.version,
+		"uptime_seconds":      int64(time.Since(s.started).Seconds()),
+		"ffmpeg_installed":    ffmpegInstalled,
+		"temp_dir":            s.tmpRoot,
+		"docker_web":          true,
+		"queued_downloads":    queue.QueuedCount,
+		"completed_downloads": queue.CompletedCount,
+	})
+}
+
+func (s *webServer) handleDockerStatus(w http.ResponseWriter, r *http.Request) {
+	ffmpegInstalled, _ := s.app.CheckFFmpegInstalled()
+	queue := s.app.GetDownloadQueue()
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"app": map[string]interface{}{
+			"name":    "SpotiFLAC",
+			"version": s.version,
+			"mode":    "docker-web",
+		},
+		"runtime": map[string]interface{}{
+			"started_at":      s.started.Format(time.RFC3339),
+			"uptime_seconds":  int64(time.Since(s.started).Seconds()),
+			"temp_dir":        s.tmpRoot,
+			"ffmpeg_installed": ffmpegInstalled,
+		},
+		"queue": queue,
+	})
 }
 
 func (s *webServer) handleCurrentIP(w http.ResponseWriter, r *http.Request) {

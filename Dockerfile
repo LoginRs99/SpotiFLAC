@@ -22,6 +22,10 @@ RUN CGO_ENABLED=1 go build -tags dockerweb -o /out/spotiflac-web .
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
+LABEL org.opencontainers.image.title="SpotiFLAC Docker Web" \
+      org.opencontainers.image.description="Docker-hosted web build of SpotiFLAC" \
+      org.opencontainers.image.source="https://github.com/LoginRs99/SpotiFLAC" \
+      org.opencontainers.image.documentation="https://github.com/LoginRs99/SpotiFLAC/blob/docker-web/docs/docker-web.md"
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates ffmpeg \
     && rm -rf /var/lib/apt/lists/*
@@ -31,4 +35,5 @@ ENV SPOTIFLAC_HOST=0.0.0.0
 ENV SPOTIFLAC_PORT=8080
 ENV SPOTIFLAC_TMP_DIR=/tmp/spotiflac-web
 EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD ["spotiflac-web", "--healthcheck"]
 CMD ["spotiflac-web"]

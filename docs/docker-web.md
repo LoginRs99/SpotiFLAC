@@ -21,11 +21,50 @@ docker run --rm -p 8080:8080 --tmpfs /tmp/spotiflac-web:size=4g ghcr.io/loginrs9
 
 Then open `http://SERVER_IP:8080`.
 
+## Portainer Stack
+
+Use this stack when deploying the published GHCR image:
+
+```yaml
+services:
+  spotiflac-web:
+    image: ghcr.io/loginrs99/spotiflac-web:docker-web
+    container_name: spotiflac-web
+    ports:
+      - "8080:8080"
+    environment:
+      SPOTIFLAC_HOST: "0.0.0.0"
+      SPOTIFLAC_PORT: "8080"
+      SPOTIFLAC_TMP_DIR: "/tmp/spotiflac-web"
+    tmpfs:
+      - /tmp/spotiflac-web:size=4g
+    healthcheck:
+      test: ["CMD", "spotiflac-web", "--healthcheck"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    restart: unless-stopped
+```
+
+When updating, redeploy the stack with image pulling enabled so Portainer fetches the newest `docker-web` tag.
+
+## Health And Status
+
+Useful endpoints:
+
+- `GET /api/health`: lightweight healthcheck with version, uptime, FFmpeg status, queue counts, and temp directory.
+- `GET /api/docker/status`: fuller Docker status payload with app/runtime/queue details.
+
+The image also includes a Docker `HEALTHCHECK`, so Portainer should show healthy/unhealthy state after startup.
+
 ## Download Behavior
 
 The Docker web build does not keep a permanent music library in the container. Each download runs in a temporary job directory, then the completed file is streamed to the browser with an attachment response so the user saves it on their own PC.
 
 The temporary job directory is removed after the response finishes. In the provided compose file it is mounted as tmpfs at `/tmp/spotiflac-web`.
+
+On startup, the server removes stale `download-*` directories from the temp directory in case the previous container stopped during an active download.
 
 ## Configuration
 

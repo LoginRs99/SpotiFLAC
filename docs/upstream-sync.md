@@ -84,3 +84,19 @@ ghcr.io/loginrs99/spotiflac-web:docker-web
 ```
 
 In Portainer, redeploy the stack with image pull enabled so the latest image is used.
+
+## Quick Smoke Test After Sync
+
+After the Docker workflow passes:
+
+```sh
+curl http://SERVER_IP:8080/api/health
+curl http://SERVER_IP:8080/api/docker/status
+```
+
+Then open the UI and test:
+
+- Search or paste one Spotify track URL.
+- Fetch metadata.
+- Download one track and confirm the browser receives the file.
+- Check Portainer logs for `[metadata]` and `[download]` entries if anything fails.
