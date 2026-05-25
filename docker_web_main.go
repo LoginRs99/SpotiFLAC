@@ -121,8 +121,20 @@ func logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)
+		if isQuietPollEndpoint(r.URL.Path) {
+			return
+		}
 		log.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
 	})
+}
+
+func isQuietPollEndpoint(path string) bool {
+	switch path {
+	case "/api/download/progress", "/api/download/queue":
+		return true
+	default:
+		return false
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, value interface{}) {
