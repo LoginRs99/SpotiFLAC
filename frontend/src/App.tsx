@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Search, X, ArrowUp } from "lucide-react";
@@ -31,14 +31,8 @@ import { useDownloadQueueDialog } from "@/hooks/useDownloadQueueDialog";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import { buildPlaylistFolderName } from "@/lib/playlist";
 import { createId } from "@/lib/id";
-const DockerWebUnavailablePage = () => null;
-const DebugLoggerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/DebugLoggerPage").then((module) => ({ default: module.DebugLoggerPage })));
-const OtherProjects = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/OtherProjects").then((module) => ({ default: module.OtherProjects })));
-const SupportPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/SupportPage").then((module) => ({ default: module.SupportPage })));
-const AudioAnalysisPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioAnalysisPage").then((module) => ({ default: module.AudioAnalysisPage })));
-const AudioConverterPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioConverterPage").then((module) => ({ default: module.AudioConverterPage })));
-const AudioResamplerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/AudioResamplerPage").then((module) => ({ default: module.AudioResamplerPage })));
-const FileManagerPage = __DOCKER_WEB__ ? DockerWebUnavailablePage : lazy(() => import("@/components/FileManagerPage").then((module) => ({ default: module.FileManagerPage })));
+import { isDockerWebHiddenPage, optionalPages } from "@/docker-web/pages";
+const { DebugLoggerPage, OtherProjects, SupportPage, AudioAnalysisPage, AudioConverterPage, AudioResamplerPage, FileManagerPage } = optionalPages;
 const HISTORY_KEY = "spotiflac_fetch_history";
 const MAX_HISTORY = 5;
 function extractSpotifyEntityFromURL(url: string): {
@@ -500,7 +494,7 @@ function App() {
         return null;
     };
     const handlePageChange = (page: PageType) => {
-        if (__DOCKER_WEB__ && ["debug", "projects", "support", "audio-analysis", "audio-converter", "audio-resampler", "file-manager"].includes(page)) {
+        if (isDockerWebHiddenPage(page)) {
             setCurrentPage("main");
             return;
         }

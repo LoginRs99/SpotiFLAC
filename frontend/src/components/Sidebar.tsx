@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { openExternal } from "@/lib/utils";
+import { shouldShowDesktopNavigation } from "@/docker-web/navigation";
 export type PageType = "main" | "settings" | "debug" | "audio-analysis" | "audio-converter" | "audio-resampler" | "file-manager" | "projects" | "support" | "history";
 interface SidebarProps {
     currentPage: PageType;
@@ -27,7 +28,7 @@ interface AnimatedIconHandle {
     stopAnimation: () => void;
 }
 export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
-    const isDockerWeb = __DOCKER_WEB__;
+    const showDesktopNavigation = shouldShowDesktopNavigation();
     const [isIssuesDialogOpen, setIsIssuesDialogOpen] = useState(false);
     const [hasIssueAgreement, setHasIssueAgreement] = useState(false);
     const analyzerIconRef = useRef<ActivityIconHandle>(null);
@@ -85,7 +86,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     </TooltipContent>
                 </Tooltip>
 
-                {!isDockerWeb && (<Tooltip delayDuration={0}>
+                {showDesktopNavigation && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "debug" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "debug" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("debug")}>
                             <TerminalIcon size={20} loop={true}/>
@@ -96,7 +97,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     </TooltipContent>
                 </Tooltip>)}
 
-                {!isDockerWeb && (<DropdownMenu>
+                {showDesktopNavigation && (<DropdownMenu>
                     <Tooltip delayDuration={0}>
                         <DropdownMenuTrigger asChild>
                             <TooltipTrigger asChild>
@@ -131,7 +132,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
             </div>
 
             <div className="mt-auto flex flex-col gap-2">
-                {!isDockerWeb && (<Dialog open={isIssuesDialogOpen} onOpenChange={handleIssuesDialogChange}>
+                {showDesktopNavigation && (<Dialog open={isIssuesDialogOpen} onOpenChange={handleIssuesDialogChange}>
                     <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-primary/10 hover:text-primary" onClick={() => setIsIssuesDialogOpen(true)}>
@@ -175,7 +176,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     </DialogContent>
                 </Dialog>)}
 
-                {!isDockerWeb && (<Tooltip delayDuration={0}>
+                {showDesktopNavigation && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "projects" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "projects" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("projects")}>
                             <BlocksIcon size={20} loop={true}/>
@@ -186,7 +187,7 @@ export function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     </TooltipContent>
                 </Tooltip>)}
 
-                {!isDockerWeb && (<Tooltip delayDuration={0}>
+                {showDesktopNavigation && (<Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
                         <Button variant={currentPage === "support" ? "secondary" : "ghost"} size="icon" className={`h-10 w-10 ${currentPage === "support" ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-primary/10 hover:text-primary"}`} onClick={() => onPageChange("support")}>
                             <CoffeeIcon size={20} loop={true}/>
